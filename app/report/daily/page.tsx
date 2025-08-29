@@ -33,14 +33,21 @@ export default function DailyReport() {
   const [report, setReport] = useState<ReportItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  console.log(_allReports)
-  
+  const [totals, setTotals] = useState({
+    playCount: 0,
+    placedBet: 0,
+    awarded: 0,
+    netCash: 0,
+    commission: 0,
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch(`https://gojbingoapi.onrender.com/reports/lidu`);
+      const shopId = localStorage.getItem("shop_id");
+      const res = await fetch(`https://gojbingoapi.onrender.com/reports/${shopId}`);
       const data: ShopReport = await res.json();
       setAllReports(data.reports);
 
@@ -84,10 +91,25 @@ export default function DailyReport() {
         commission: r.company_commission,
       }));
 
+      // Calculate totals
+      const totalsCalc = reportItems.reduce(
+        (acc, r) => {
+          acc.playCount += r.playCount;
+          acc.placedBet += r.placedBet;
+          acc.awarded += r.awarded;
+          acc.netCash += r.netCash;
+          acc.commission += r.commission;
+          return acc;
+        },
+        { playCount: 0, placedBet: 0, awarded: 0, netCash: 0, commission: 0 }
+      );
+
       setReport(reportItems);
+      setTotals(totalsCalc);
     } catch (err) {
       console.error(err);
       setReport([]);
+      setTotals({ playCount: 0, placedBet: 0, awarded: 0, netCash: 0, commission: 0 });
     } finally {
       setLoading(false);
     }
@@ -104,6 +126,7 @@ export default function DailyReport() {
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
         onSubmit={handleSubmit}
       >
+        {/* ... same filter inputs as before ... */}
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Duration</label>
           <select
@@ -155,26 +178,45 @@ export default function DailyReport() {
             No data available
           </div>
         ) : (
-          report.map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-lg shadow p-4 border border-slate-200"
-            >
-              <p className="font-semibold text-slate-700">{item.date}</p>
+          <>
+            {report.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-lg shadow p-4 border border-slate-200"
+              >
+                <p className="font-semibold text-slate-700">{item.date}</p>
+                <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+                  <span className="text-slate-500">Play Count:</span>
+                  <span>{item.playCount}</span>
+                  <span className="text-slate-500">Placed Bet:</span>
+                  <span>{item.placedBet}</span>
+                  <span className="text-slate-500">Awarded:</span>
+                  <span>{item.awarded}</span>
+                  <span className="text-slate-500">Net Cash:</span>
+                  <span>{item.netCash}</span>
+                  <span className="text-slate-500">Commission:</span>
+                  <span>{item.commission}</span>
+                </div>
+              </div>
+            ))}
+
+            {/* Totals Card */}
+            <div className="bg-indigo-50 rounded-lg shadow p-4 border border-indigo-200">
+              <p className="font-bold text-indigo-700">Totals</p>
               <div className="grid grid-cols-2 gap-2 text-sm mt-2">
                 <span className="text-slate-500">Play Count:</span>
-                <span>{item.playCount}</span>
+                <span>{totals.playCount}</span>
                 <span className="text-slate-500">Placed Bet:</span>
-                <span>{item.placedBet}</span>
+                <span>{totals.placedBet}</span>
                 <span className="text-slate-500">Awarded:</span>
-                <span>{item.awarded}</span>
+                <span>{totals.awarded}</span>
                 <span className="text-slate-500">Net Cash:</span>
-                <span>{item.netCash}</span>
+                <span>{totals.netCash}</span>
                 <span className="text-slate-500">Commission:</span>
-                <span>{item.commission}</span>
+                <span>{totals.commission}</span>
               </div>
             </div>
-          ))
+          </>
         )}
       </div>
 
@@ -211,28 +253,40 @@ export default function DailyReport() {
                 </td>
               </tr>
             ) : (
-              report.map((item, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                    {item.date}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                    {item.playCount}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                    {item.placedBet}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                    {item.awarded}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                    {item.netCash}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                    {item.commission}
-                  </td>
+              <>
+                {report.map((item, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50">
+                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {item.date}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {item.playCount}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {item.placedBet}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {item.awarded}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {item.netCash}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {item.commission}
+                    </td>
+                  </tr>
+                ))}
+
+                {/* Totals Row */}
+                <tr className="bg-indigo-50 font-bold">
+                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">Totals</td>
+                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.playCount}</td>
+                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.placedBet}</td>
+                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.awarded}</td>
+                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.netCash}</td>
+                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.commission}</td>
                 </tr>
-              ))
+              </>
             )}
           </tbody>
         </table>
