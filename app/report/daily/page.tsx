@@ -29,7 +29,7 @@ export default function DailyReport() {
   const [duration, setDuration] = useState<'today' | 'week' | 'month' | 'custom'>('today');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [_allReports, setAllReports] = useState<ReportData[]>([]);
+  const [allReports, setAllReports] = useState<ReportData[]>([]);
   const [report, setReport] = useState<ReportItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -40,6 +40,7 @@ export default function DailyReport() {
     netCash: 0,
     commission: 0,
   });
+  console.log(allReports);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -19,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
       
+      console.log(user)
       const isPublicRoute = publicRoutes.includes(pathname);
       
       // If no token and not on a public route, redirect to login

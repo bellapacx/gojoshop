@@ -37,9 +37,12 @@ export default function CommissionPage() {
 
       const data = await res.json();
       setMessage(`Commission for shop ${data.shop_id} updated to ${data.new_commission_rate}`);
-    } catch (err: any) {
-      console.error(err);
-      setMessage(err.message || 'Error updating commission');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+      setMessage(err.message || "Login failed");
+    } else {
+      setMessage("Login failed");
+    }
     } finally {
       setLoading(false);
     }
