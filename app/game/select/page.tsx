@@ -50,7 +50,7 @@ export default function CardManagementScreen({ selectedCards}: CardManagementPro
   
   const calculatePrize = () => {
     const numSelected = selectedCardState.length;
-    const rate = commission_rate ?? 0.1; // already a number
+    const rate = commission_rate ?? 0.2; // already a number
     return numSelected * bet * (1 - rate);
   };
   
