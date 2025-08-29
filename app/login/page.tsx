@@ -37,7 +37,7 @@ export default function LoginPage() {
     setErrorMsg("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/loginshop", {
+      const response = await fetch("https://gojbingoapi.onrender.com/loginshop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
