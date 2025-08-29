@@ -34,7 +34,7 @@ export default function CardManagementScreen({ selectedCards}: CardManagementPro
   useEffect(() => {
     const fetchShopData = async () => {
       try {
-        const shop_id = localStorage.getItem('shopid');
+        const shop_id = localStorage.getItem('shop_id');
         const res = await fetch(`https://gojbingoapi.onrender.com/shop/${shop_id}`);
         if (!res.ok) throw new Error('Failed to fetch shop data');
 
