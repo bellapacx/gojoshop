@@ -33,6 +33,8 @@ export default function DailyReport() {
   const [report, setReport] = useState<ReportItem[]>([]);
   const [loading, setLoading] = useState(false);
 
+  console.log(_allReports)
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

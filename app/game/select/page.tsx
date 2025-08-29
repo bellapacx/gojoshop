@@ -9,7 +9,7 @@ interface CardManagementProps {
   setCurrentView: (view: any) => void;
 }
 
-export default function CardManagementScreen({ selectedCards, setCurrentView }: CardManagementProps) {
+export default function CardManagementScreen({ selectedCards}: CardManagementProps) {
   const [selectedCardState, setSelectedCardState] = useState<number[]>([]);
   const [bet, setBet] = useState(10);
   const [_commission] = useState('20%');
@@ -20,6 +20,7 @@ export default function CardManagementScreen({ selectedCards, setCurrentView }: 
   const [commission_rate, setCommission] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log(_balance,_commission)
   // Initialize selected cards from props
   useEffect(() => {
     if (selectedCards && selectedCards.length > 0) {
