@@ -1,12 +1,13 @@
 'use client';
 
+import { AppView } from '@/app/ types/navigation';
 import React, { useState, useEffect } from 'react';
 
 const TOTAL_CARDS = 200;
 
 interface CardManagementProps {
   selectedCards: number[];
-  setCurrentView: (view: any) => void;
+  setCurrentView: (view: AppView) => void;
 }
 
 export default function CardManagementScreen({ selectedCards}: CardManagementProps) {
