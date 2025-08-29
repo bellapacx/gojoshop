@@ -12,11 +12,11 @@ interface CardManagementProps {
 export default function CardManagementScreen({ selectedCards, setCurrentView }: CardManagementProps) {
   const [selectedCardState, setSelectedCardState] = useState<number[]>([]);
   const [bet, setBet] = useState(10);
-  const [commission] = useState('20%');
+  const [_commission] = useState('20%');
   const [interval] = useState('4 sec');
   const [pattern, setPattern] = useState('All');
   const [language] = useState('Amharic');
-  const [balance, setBalance] = useState(0);
+  const [_balance, setBalance] = useState(0);
   const [commission_rate, setCommission] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,7 +33,7 @@ export default function CardManagementScreen({ selectedCards, setCurrentView }: 
     const fetchShopData = async () => {
       try {
         const shop_id = localStorage.getItem('shopid');
-        const res = await fetch(`https://gojbingoapi.onrender.com/shop/lidu`);
+        const res = await fetch(`https://gojbingoapi.onrender.com/shop/${shop_id}`);
         if (!res.ok) throw new Error('Failed to fetch shop data');
 
         const { balance, commission_rate } = await res.json();
@@ -60,10 +60,7 @@ export default function CardManagementScreen({ selectedCards, setCurrentView }: 
   };
 
   const handleRefresh = () => setSelectedCardState([]);
-  const handleLogout = () => {
-    localStorage.clear();
-    setCurrentView({ name: 'login' });
-  };
+  
 
   
 
@@ -93,7 +90,7 @@ export default function CardManagementScreen({ selectedCards, setCurrentView }: 
     });
 
     if (!res.ok) throw new Error("Game start failed");
-    const { round_id } = await res.json();
+   
     alert(`Game started successfully!`);
   } catch (err) {
     console.error("Error:", err);

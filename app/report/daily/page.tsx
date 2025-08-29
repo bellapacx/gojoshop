@@ -29,7 +29,7 @@ export default function DailyReport() {
   const [duration, setDuration] = useState<'today' | 'week' | 'month' | 'custom'>('today');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [allReports, setAllReports] = useState<ReportData[]>([]);
+  const [_allReports, setAllReports] = useState<ReportData[]>([]);
   const [report, setReport] = useState<ReportItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -106,7 +106,7 @@ export default function DailyReport() {
           <label className="text-sm font-medium mb-1">Duration</label>
           <select
             value={duration}
-            onChange={(e) => setDuration(e.target.value as any)}
+            onChange={(e) => setDuration(e.target.value as 'today' | 'week' | 'month' | 'custom')}
             className="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm"
           >
             <option value="today">Today</option>

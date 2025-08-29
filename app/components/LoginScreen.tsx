@@ -36,46 +36,51 @@ export default function LoginScreen({
   }, [setCurrentView]);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrorMsg("");
+  e.preventDefault();
+  setIsLoading(true);
+  setErrorMsg("");
 
-    try {
-      const response = await fetch("https://gojbingoapi.onrender.com/loginshop", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shopId: credentials.shopId,
-          username: credentials.username,
-          password: credentials.password,
-        }),
-      });
+  try {
+    const response = await fetch("https://gojbingoapi.onrender.com/loginshop", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        shopId: credentials.shopId,
+        username: credentials.username,
+        password: credentials.password,
+      }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Login failed");
-      }
-
-      const data = await response.json();
-      const { token, user } = data;
-
-      if (!user) throw new Error("Invalid response from server");
-
-      // Save token and shopId
-      localStorage.setItem("token", token || "");
-      localStorage.setItem("shopid", credentials.shopId);
-
-      // Pass user to parent
-      setCurrentUser({ ...user, token }); // token is optional
-
-      // Switch view
-      setCurrentView("dashboard");
-    } catch (err: any) {
-      setErrorMsg(err.message || "Login failed");
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Login failed");
     }
-  };
+
+    const data = await response.json();
+    const { token, user } = data;
+
+    if (!user) throw new Error("Invalid response from server");
+
+    // Save token and shopId
+    localStorage.setItem("token", token || "");
+    localStorage.setItem("shopid", credentials.shopId);
+
+    // Pass user to parent
+    setCurrentUser({ ...user, token }); // token is optional
+
+    // Switch view
+    setCurrentView("dashboard");
+  } catch (err: unknown) {
+    // Proper error handling for TypeScript
+    if (err instanceof Error) {
+      setErrorMsg(err.message || "Login failed");
+    } else {
+      setErrorMsg("Login failed");
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50">

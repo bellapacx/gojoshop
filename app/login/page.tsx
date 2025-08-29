@@ -4,13 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Shield } from "react-feather";
 
-interface User {
-  name: string;
-  role: string;
-  shopId: string;
-  permissions: string[];
-  balance: number;
-}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -65,8 +58,12 @@ export default function LoginPage() {
 
       // Redirect to dashboard
       router.replace("/");
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+      setErrorMsg(err.message || "Login failed");
+    } else {
+      setErrorMsg("Login failed");
+    }
     } finally {
       setIsLoading(false);
     }
