@@ -49,10 +49,15 @@ export default function CardManagementScreen({ selectedCards}: CardManagementPro
   }, []);
   
   const calculatePrize = () => {
-    const numSelected = selectedCardState.length;
-    const rate = commission_rate ?? 0.2; // already a number
-    return numSelected * bet * (1 - rate);
-  };
+  const numSelected = selectedCardState.length;
+
+  // Ensure commissionRate is a number between 0 and 1
+  const rate = commission_rate != null
+    ? commission_rate
+    : 0.2; // default 10% if undefined
+
+  return numSelected * bet * (1 - rate);
+};
   
   const toggleCard = (num: number) => {
     setSelectedCardState(prev => 
