@@ -79,7 +79,7 @@ export default function CardManagementScreen({ selectedCards}: CardManagementPro
 
   setIsLoading(true);
   try {
-    const shopId = "lidu"; // Replace with actual shop ID retrieval logic
+    const shopId = localStorage.getItem('shop_id'); // Replace with actual shop ID retrieval logic
     const res = await fetch("https://gojbingoapi.onrender.com/savegame", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
