@@ -40,7 +40,6 @@ export default function DailyReport() {
     netCash: 0,
     commission: 0,
   });
-  console.log(allReports);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,7 +126,6 @@ export default function DailyReport() {
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
         onSubmit={handleSubmit}
       >
-        {/* ... same filter inputs as before ... */}
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Duration</label>
           <select
@@ -172,84 +170,25 @@ export default function DailyReport() {
         </div>
       </form>
 
-      {/* Mobile Card View */}
-      <div className="space-y-4 md:hidden">
-        {report.length === 0 ? (
-          <div className="text-center text-slate-500 text-sm py-4">
-            No data available
-          </div>
-        ) : (
-          <>
-            {report.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-lg shadow p-4 border border-slate-200"
-              >
-                <p className="font-semibold text-slate-700">{item.date}</p>
-                <div className="grid grid-cols-2 gap-2 text-sm mt-2">
-                  <span className="text-slate-500">Play Count:</span>
-                  <span>{item.playCount}</span>
-                  <span className="text-slate-500">Placed Bet:</span>
-                  <span>{item.placedBet}</span>
-                  <span className="text-slate-500">Awarded:</span>
-                  <span>{item.awarded}</span>
-                  <span className="text-slate-500">Net Cash:</span>
-                  <span>{item.netCash}</span>
-                  <span className="text-slate-500">Commission:</span>
-                  <span>{item.commission}</span>
-                </div>
-              </div>
-            ))}
-
-            {/* Totals Card */}
-            <div className="bg-indigo-50 rounded-lg shadow p-4 border border-indigo-200">
-              <p className="font-bold text-indigo-700">Totals</p>
-              <div className="grid grid-cols-2 gap-2 text-sm mt-2">
-                <span className="text-slate-500">Play Count:</span>
-                <span>{totals.playCount}</span>
-                <span className="text-slate-500">Placed Bet:</span>
-                <span>{totals.placedBet}</span>
-                <span className="text-slate-500">Awarded:</span>
-                <span>{totals.awarded}</span>
-                <span className="text-slate-500">Net Cash:</span>
-                <span>{totals.netCash}</span>
-                <span className="text-slate-500">Commission:</span>
-                <span>{totals.commission}</span>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Desktop Table View */}
-      <div className="hidden md:block overflow-x-auto border border-slate-300 rounded bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-100">
+      {/* Single Responsive Table (swipeable + sticky header) */}
+      <div className="overflow-x-auto border border-slate-300 rounded-lg bg-white shadow-md">
+        <table className="min-w-[700px] w-full text-sm text-left text-slate-700">
+          <thead className="bg-slate-100 sticky top-0 z-10">
             <tr>
-              {[
-                "Date",
-                "Play Count",
-                "Placed Bet",
-                "Awarded",
-                "Net Cash",
-                "Commission",
-              ].map((col) => (
+              {["Date", "Play Count", "Placed Bet", "Awarded", "Net Cash", "Commission"].map((col) => (
                 <th
                   key={col}
-                  className="px-3 sm:px-4 py-2 text-left font-semibold text-slate-700 whitespace-nowrap text-xs sm:text-sm"
+                  className="px-4 py-3 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm border-b"
                 >
                   {col}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="divide-y divide-slate-200">
             {report.length === 0 ? (
               <tr>
-                <td
-                  colSpan={6}
-                  className="px-4 py-4 text-center text-slate-500 text-sm"
-                >
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-500 text-sm">
                   No data available
                 </td>
               </tr>
@@ -257,35 +196,23 @@ export default function DailyReport() {
               <>
                 {report.map((item, idx) => (
                   <tr key={idx} className="hover:bg-slate-50">
-                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                      {item.date}
-                    </td>
-                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                      {item.playCount}
-                    </td>
-                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                      {item.placedBet}
-                    </td>
-                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                      {item.awarded}
-                    </td>
-                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                      {item.netCash}
-                    </td>
-                    <td className="px-3 sm:px-4 py-2 whitespace-nowrap">
-                      {item.commission}
-                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">{item.date}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{item.playCount}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{item.placedBet}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{item.awarded}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{item.netCash}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{item.commission}</td>
                   </tr>
                 ))}
 
                 {/* Totals Row */}
                 <tr className="bg-indigo-50 font-bold">
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">Totals</td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.playCount}</td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.placedBet}</td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.awarded}</td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.netCash}</td>
-                  <td className="px-3 sm:px-4 py-2 whitespace-nowrap">{totals.commission}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">Totals</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{totals.playCount}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{totals.placedBet}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{totals.awarded}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{totals.netCash}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{totals.commission}</td>
                 </tr>
               </>
             )}
