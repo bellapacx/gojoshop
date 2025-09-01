@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState, ChangeEvent, useEffect } from "react";
 
@@ -17,7 +17,7 @@ type BingoCard = BingoColumns & {
 const createEmptyCard = (id: number): BingoCard => ({
   B: Array(5).fill(null),
   I: Array(5).fill(null),
-  N: Array(5).fill(null).map((_, i) => (i === 2 ? null : null)), // free center
+  N: Array(5).fill(null),
   G: Array(5).fill(null),
   O: Array(5).fill(null),
   card_id: id,
@@ -29,21 +29,26 @@ export default function BingoCardCreator() {
 
   useEffect(() => {
     const storedShopId = localStorage.getItem("shop_id");
-    if (storedShopId) {
-      setShopId(storedShopId);
-    }
+    if (storedShopId) setShopId(storedShopId);
   }, []);
 
   const handleChange = (
     cardIndex: number,
-    column: keyof BingoColumns, // ✅ only B, I, N, G, O allowed
+    column: keyof BingoColumns,
     rowIndex: number,
     value: string
   ) => {
     setCards((prev) => {
       const updated = [...prev];
-      updated[cardIndex][column][rowIndex] =
-        value === "" ? null : Number(value);
+      updated[cardIndex][column][rowIndex] = value === "" ? null : Number(value);
+      return updated;
+    });
+  };
+
+  const handleCardIdChange = (cardIndex: number, value: string) => {
+    setCards((prev) => {
+      const updated = [...prev];
+      updated[cardIndex].card_id = Number(value) || 0;
       return updated;
     });
   };
@@ -57,16 +62,13 @@ export default function BingoCardCreator() {
       alert("Please enter a Shop ID first.");
       return;
     }
-
     const jsonData = JSON.stringify(cards, null, 2);
     const blob = new Blob([jsonData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
     link.download = `${shopId}.json`;
     link.click();
-
     URL.revokeObjectURL(url);
   };
 
@@ -94,20 +96,24 @@ export default function BingoCardCreator() {
       <div className="flex flex-col gap-6">
         {cards.map((card, cardIndex) => (
           <div
-            key={card.card_id}
+            key={cardIndex}
             className="bg-white shadow-md rounded-lg border border-slate-200 overflow-hidden"
           >
-            <div className="bg-slate-800 text-white text-center font-bold py-2 text-sm">
-              Card #{card.card_id}
+            <div className="flex items-center justify-between bg-slate-800 text-white font-bold py-2 px-4 text-sm">
+              <span>Card #{card.card_id}</span>
+              {/* Editable Card ID */}
+              <input
+                type="number"
+                value={card.card_id}
+                onChange={(e) => handleCardIdChange(cardIndex, e.target.value)}
+                className="w-16 text-center rounded border border-slate-300 px-1 py-0 text-sm"
+              />
             </div>
             <table className="w-full text-center border-collapse text-xs sm:text-sm">
               <thead>
                 <tr className="bg-slate-200">
                   {["B", "I", "N", "G", "O"].map((col) => (
-                    <th
-                      key={col}
-                      className="p-2 border border-slate-300 font-bold"
-                    >
+                    <th key={col} className="p-2 border border-slate-300 font-bold">
                       {col}
                     </th>
                   ))}
@@ -123,12 +129,7 @@ export default function BingoCardCreator() {
                             type="number"
                             value={card[col][rowIndex] ?? ""}
                             onChange={(e) =>
-                              handleChange(
-                                cardIndex,
-                                col,
-                                rowIndex,
-                                e.target.value
-                              )
+                              handleChange(cardIndex, col, rowIndex, e.target.value)
                             }
                             className="w-10 sm:w-12 text-center border rounded p-1 text-xs sm:text-sm"
                             disabled={col === "N" && rowIndex === 2} // free space
