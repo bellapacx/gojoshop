@@ -41,6 +41,7 @@ export default function LoginScreen({
   setErrorMsg("");
 
   try {
+    
     const response = await fetch("https://gojbingoapi.onrender.com/loginshop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

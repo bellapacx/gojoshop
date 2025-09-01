@@ -68,6 +68,10 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const [active, setActive] = useState("Dashboard");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    setCurrentView({ name: 'login' });
+  };
   return (
     <>
       {/* Overlay for mobile */}
@@ -149,3 +153,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     </>
   );
 }
+function setCurrentView(arg0: { name: string; }) {
+  throw new Error("Function not implemented.");
+}
+

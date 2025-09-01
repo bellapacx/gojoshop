@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface ReportData {
   date: string;
@@ -41,75 +41,6 @@ export default function DailyReport() {
     commission: 0,
   });
 
-  const getEthiopianDate = () => {
-  const now = new Date();
-  // Convert to UTC+3
-  const ethiopianTime = new Date(now.getTime() + 3 * 60 * 60 * 1000);
-  return ethiopianTime;
-};
-
-  // Update From and To dates whenever duration changes
-useEffect(() => {
-  const now = getEthiopianDate(); // current Ethiopian date
-  let from: Date;
-  let to: Date;
-
-  const getMonday = (date: Date) => {
-    const d = new Date(date);
-    const day = d.getUTCDay(); // use UTC to avoid local TZ offset
-    const diff = (day === 0 ? -6 : 1) - day;
-    d.setUTCDate(d.getUTCDate() + diff);
-    d.setUTCHours(0, 0, 0, 0);
-    return d;
-  };
-
-  switch (duration) {
-    case 'today':
-      from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-      to = new Date(from);
-      break;
-
-    case 'yesterday':
-      from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1));
-      to = new Date(from);
-      break;
-
-    case 'week':
-      from = getMonday(now);
-      to = new Date(from);
-      to.setUTCDate(to.getUTCDate() + 6);
-      break;
-
-    case 'lastWeek':
-      const thisMonday = getMonday(now);
-      from = new Date(thisMonday);
-      from.setUTCDate(from.getUTCDate() - 7);
-      to = new Date(from);
-      to.setUTCDate(to.getUTCDate() + 6);
-      break;
-
-    case 'month':
-      from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-      to = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0));
-      break;
-
-    case 'lastMonth':
-      from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
-      to = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth() + 1, 0));
-      break;
-
-    default:
-      from = new Date(0);
-      to = new Date();
-  }
-
-  setFromDate(from.toISOString().split('T')[0]);
-  setToDate(to.toISOString().split('T')[0]);
-}, [duration]);
-
-
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -121,9 +52,63 @@ useEffect(() => {
       const data: ShopReport = await res.json();
       setAllReports(data.reports);
 
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
-      to.setHours(23, 59, 59, 999);
+      const now = new Date();
+      let from: Date;
+
+      if (fromDate) {
+        from = new Date(fromDate);
+      } else {
+        switch (duration) {
+          case 'today':
+            from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            break;
+          case 'yesterday':
+            from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+            break;
+          case 'week':
+            const day = now.getDay();
+            from = new Date(now);
+            from.setDate(now.getDate() - day);
+            from.setHours(0, 0, 0, 0);
+            break;
+          case 'lastWeek':
+            const lastWeekStart = new Date(now);
+            lastWeekStart.setDate(now.getDate() - now.getDay() - 7);
+            from = new Date(lastWeekStart.getFullYear(), lastWeekStart.getMonth(), lastWeekStart.getDate());
+            break;
+          case 'month':
+            from = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+          case 'lastMonth':
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            from = lastMonth;
+            break;
+          default:
+            from = new Date(0);
+        }
+      }
+
+      const to = toDate
+        ? new Date(toDate)
+        : (() => {
+            switch (duration) {
+              case 'yesterday':
+                const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+                y.setHours(23, 59, 59, 999);
+                return y;
+              case 'lastWeek':
+                const lwEnd = new Date(from);
+                lwEnd.setDate(lwEnd.getDate() + 6);
+                lwEnd.setHours(23, 59, 59, 999);
+                return lwEnd;
+              case 'lastMonth':
+                const lmEnd = new Date(from.getFullYear(), from.getMonth() + 1, 0);
+                lmEnd.setHours(23, 59, 59, 999);
+                return lmEnd;
+              default:
+                return now;
+            }
+          })();
 
       const filteredReports = data.reports.filter((r) => {
         const reportDate = new Date(r.date);
@@ -139,6 +124,7 @@ useEffect(() => {
         commission: r.company_commission,
       }));
 
+      // Calculate totals
       const totalsCalc = reportItems.reduce(
         (acc, r) => {
           acc.playCount += r.playCount;
@@ -198,27 +184,31 @@ useEffect(() => {
           </select>
         </div>
 
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">From</label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm"
-          />
-        </div>
+        {/* From / To inputs for custom */}
+        {duration === 'custom' && (
+          <>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium mb-1">From</label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium mb-1">To</label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm"
+              />
+            </div>
+          </>
+        )}
 
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">To</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm"
-          />
-        </div>
-
-        <div className="flex  sm:col-span-2 md:col-span-1">
+        <div className="flex justify-end sm:col-span-2 md:col-span-1">
           <button
             type="submit"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition w-full sm:w-auto text-sm font-medium"

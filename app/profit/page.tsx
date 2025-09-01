@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function CommissionPage() {
   const [shopId, setShopId] = useState('');
-  const [commissionRate, setCommissionRate] = useState<number>(0.1); // default 10%
+  const [commissionRate, setCommissionRate] = useState(0.1); // default 10%
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -12,7 +12,7 @@ export default function CommissionPage() {
 
   // Load shopId from localStorage
   useEffect(() => {
-    const storedShopId = localStorage.getItem('shopid');
+    const storedShopId = localStorage.getItem('shop_id');
     if (storedShopId) setShopId(storedShopId);
   }, []);
 
@@ -21,14 +21,16 @@ export default function CommissionPage() {
       setMessage('Shop ID not found in localStorage');
       return;
     }
+
     setLoading(true);
     setMessage('');
-
+    const token = localStorage.getItem("token")
     try {
       const res = await fetch(`${API_BASE}/shops/${shopId}/commission`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ commission_rate: commissionRate }),
       });
@@ -38,11 +40,8 @@ export default function CommissionPage() {
       const data = await res.json();
       setMessage(`Commission for shop ${data.shop_id} updated to ${data.new_commission_rate}`);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-      setMessage(err.message || "Login failed");
-    } else {
-      setMessage("Login failed");
-    }
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update commission';
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -71,7 +70,7 @@ export default function CommissionPage() {
             max={1}
             step={0.01}
             value={commissionRate}
-            onChange={(e) => setCommissionRate(parseFloat(e.target.value))}
+            onChange={(e) => setCommissionRate(parseFloat(e.target.value) || 0)}
             className="border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
