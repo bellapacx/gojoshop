@@ -36,52 +36,51 @@ export default function LoginScreen({
   }, [setCurrentView]);
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setErrorMsg("");
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMsg("");
 
-  try {
-    
-    const response = await fetch("https://gojbingoapi.onrender.com/loginshop", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        shopId: credentials.shopId,
-        username: credentials.username,
-        password: credentials.password,
-      }),
-    });
+    try {
+      const response = await fetch("https://gojoapi.onrender.com/loginshop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shopId: credentials.shopId,
+          username: credentials.username,
+          password: credentials.password,
+        }),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || "Login failed");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Login failed");
+      }
+
+      const data = await response.json();
+      const { token, user } = data;
+
+      if (!user) throw new Error("Invalid response from server");
+
+      // Save token and shopId
+      localStorage.setItem("token", token || "");
+      localStorage.setItem("shopid", credentials.shopId);
+
+      // Pass user to parent
+      setCurrentUser({ ...user, token }); // token is optional
+
+      // Switch view
+      setCurrentView("dashboard");
+    } catch (err: unknown) {
+      // Proper error handling for TypeScript
+      if (err instanceof Error) {
+        setErrorMsg(err.message || "Login failed");
+      } else {
+        setErrorMsg("Login failed");
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    const data = await response.json();
-    const { token, user } = data;
-
-    if (!user) throw new Error("Invalid response from server");
-
-    // Save token and shopId
-    localStorage.setItem("token", token || "");
-    localStorage.setItem("shopid", credentials.shopId);
-
-    // Pass user to parent
-    setCurrentUser({ ...user, token }); // token is optional
-
-    // Switch view
-    setCurrentView("dashboard");
-  } catch (err: unknown) {
-    // Proper error handling for TypeScript
-    if (err instanceof Error) {
-      setErrorMsg(err.message || "Login failed");
-    } else {
-      setErrorMsg("Login failed");
-    }
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50">
@@ -95,7 +94,9 @@ export default function LoginScreen({
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-slate-700 font-medium mb-2">Shop ID</label>
+            <label className="block text-slate-700 font-medium mb-2">
+              Shop ID
+            </label>
             <input
               type="text"
               value={credentials.shopId}
@@ -109,7 +110,9 @@ export default function LoginScreen({
           </div>
 
           <div>
-            <label className="block text-slate-700 font-medium mb-2">Username</label>
+            <label className="block text-slate-700 font-medium mb-2">
+              Username
+            </label>
             <input
               type="text"
               value={credentials.username}
@@ -123,7 +126,9 @@ export default function LoginScreen({
           </div>
 
           <div>
-            <label className="block text-slate-700 font-medium mb-2">Password</label>
+            <label className="block text-slate-700 font-medium mb-2">
+              Password
+            </label>
             <input
               type="password"
               value={credentials.password}
@@ -136,7 +141,9 @@ export default function LoginScreen({
             />
           </div>
 
-          {errorMsg && <p className="text-red-500 text-center font-medium">{errorMsg}</p>}
+          {errorMsg && (
+            <p className="text-red-500 text-center font-medium">{errorMsg}</p>
+          )}
 
           <button
             type="submit"

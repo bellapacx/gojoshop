@@ -1,46 +1,49 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export default function CommissionPage() {
-  const [shopId, setShopId] = useState('');
+  const [shopId, setShopId] = useState("");
   const [commissionRate, setCommissionRate] = useState(0.1); // default 10%
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  const API_BASE = 'https://gojbingoapi.onrender.com'; // replace with your API
+  const API_BASE = "https://gojoapi.onrender.com"; // replace with your API
 
   // Load shopId from localStorage
   useEffect(() => {
-    const storedShopId = localStorage.getItem('shop_id');
+    const storedShopId = localStorage.getItem("shop_id");
     if (storedShopId) setShopId(storedShopId);
   }, []);
 
   const updateCommission = async () => {
     if (!shopId) {
-      setMessage('Shop ID not found in localStorage');
+      setMessage("Shop ID not found in localStorage");
       return;
     }
 
     setLoading(true);
-    setMessage('');
-    const token = localStorage.getItem("token")
+    setMessage("");
+    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${API_BASE}/shops/${shopId}/commission`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ commission_rate: commissionRate }),
       });
 
-      if (!res.ok) throw new Error('Failed to update commission');
+      if (!res.ok) throw new Error("Failed to update commission");
 
       const data = await res.json();
-      setMessage(`Commission for shop ${data.shop_id} updated to ${data.new_commission_rate}`);
+      setMessage(
+        `Commission for shop ${data.shop_id} updated to ${data.new_commission_rate}`
+      );
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update commission';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update commission";
       setMessage(errorMessage);
     } finally {
       setLoading(false);
@@ -80,11 +83,15 @@ export default function CommissionPage() {
           className="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
           disabled={loading || !shopId}
         >
-          {loading ? 'Updating...' : 'Update Commission'}
+          {loading ? "Updating..." : "Update Commission"}
         </button>
 
         {message && (
-          <p className={`text-sm ${message.includes('updated') ? 'text-green-600' : 'text-red-600'}`}>
+          <p
+            className={`text-sm ${
+              message.includes("updated") ? "text-green-600" : "text-red-600"
+            }`}
+          >
             {message}
           </p>
         )}

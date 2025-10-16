@@ -5,13 +5,12 @@ import { useEffect, useState } from "react";
 interface NavbarProps {
   onMenuClick: () => void;
 }
-  
 
 export function Navbar({ onMenuClick }: NavbarProps) {
-  const [storedShopId,setStoredShopId] = useState<string | null>(null);
+  const [storedShopId, setStoredShopId] = useState<string | null>(null);
   useEffect(() => {
     const storedShopId = localStorage.getItem("shop_id");
-    if(storedShopId){
+    if (storedShopId) {
       setStoredShopId(storedShopId);
     }
   }, []);
@@ -26,8 +25,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         >
           <Menu className="w-6 h-6 text-slate-700" />
         </button>
-
-        
       </div>
 
       {/* Right side (User Profile) */}

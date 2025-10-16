@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Shield } from "react-feather";
 
-
 export default function LoginPage() {
   const router = useRouter();
 
@@ -37,7 +36,7 @@ export default function LoginPage() {
     setErrorMsg("");
 
     try {
-      const response = await fetch("https://gojbingoapi.onrender.com/loginshop", {
+      const response = await fetch("https://gojoapi.onrender.com/loginshop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
@@ -60,10 +59,10 @@ export default function LoginPage() {
       router.replace("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
-      setErrorMsg(err.message || "Login failed");
-    } else {
-      setErrorMsg("Login failed");
-    }
+        setErrorMsg(err.message || "Login failed");
+      } else {
+        setErrorMsg("Login failed");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +80,9 @@ export default function LoginPage() {
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-slate-700 font-medium mb-2">Shop ID</label>
+            <label className="block text-slate-700 font-medium mb-2">
+              Shop ID
+            </label>
             <input
               type="text"
               value={credentials.shopId}
@@ -95,7 +96,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-slate-700 font-medium mb-2">Username</label>
+            <label className="block text-slate-700 font-medium mb-2">
+              Username
+            </label>
             <input
               type="text"
               value={credentials.username}
@@ -109,7 +112,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-slate-700 font-medium mb-2">Password</label>
+            <label className="block text-slate-700 font-medium mb-2">
+              Password
+            </label>
             <input
               type="password"
               value={credentials.password}

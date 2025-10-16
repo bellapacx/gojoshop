@@ -70,7 +70,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
   const handleLogout = () => {
     localStorage.clear();
-    setCurrentView({ name: 'login' });
+    setCurrentView({ name: "login" });
   };
   return (
     <>
@@ -153,7 +153,6 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     </>
   );
 }
-function setCurrentView(arg0: { name: string; }) {
+function setCurrentView(arg0: { name: string }) {
   throw new Error("Function not implemented.");
 }
-

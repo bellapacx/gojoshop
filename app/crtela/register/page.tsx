@@ -40,7 +40,8 @@ export default function BingoCardCreator() {
   ) => {
     setCards((prev) => {
       const updated = [...prev];
-      updated[cardIndex][column][rowIndex] = value === "" ? null : Number(value);
+      updated[cardIndex][column][rowIndex] =
+        value === "" ? null : Number(value);
       return updated;
     });
   };
@@ -113,7 +114,10 @@ export default function BingoCardCreator() {
               <thead>
                 <tr className="bg-slate-200">
                   {["B", "I", "N", "G", "O"].map((col) => (
-                    <th key={col} className="p-2 border border-slate-300 font-bold">
+                    <th
+                      key={col}
+                      className="p-2 border border-slate-300 font-bold"
+                    >
                       {col}
                     </th>
                   ))}
@@ -129,7 +133,12 @@ export default function BingoCardCreator() {
                             type="number"
                             value={card[col][rowIndex] ?? ""}
                             onChange={(e) =>
-                              handleChange(cardIndex, col, rowIndex, e.target.value)
+                              handleChange(
+                                cardIndex,
+                                col,
+                                rowIndex,
+                                e.target.value
+                              )
                             }
                             className="w-10 sm:w-12 text-center border rounded p-1 text-xs sm:text-sm"
                             disabled={col === "N" && rowIndex === 2} // free space

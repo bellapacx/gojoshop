@@ -8,7 +8,11 @@ import { useRouter, usePathname } from "next/navigation";
 // List of public routes that don't require authentication
 const publicRoutes = ["/login", "/register", "/forgot-password"];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
@@ -18,22 +22,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const checkAuthentication = () => {
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
-      
-      console.log(user)
+
+      console.log(user);
       const isPublicRoute = publicRoutes.includes(pathname);
-      
+
       // If no token and not on a public route, redirect to login
       if (!token && !isPublicRoute) {
         router.push("/login");
         return;
       }
-      
+
       // If token exists and user is on login page, redirect to dashboard
       if (token && pathname === "/login") {
         router.push("/dashboard");
         return;
       }
-      
+
       setIsCheckingAuth(false);
     };
 
@@ -56,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   // Don't show sidebar/navbar for public routes
   const isPublicRoute = publicRoutes.includes(pathname);
-  
+
   if (isPublicRoute) {
     return (
       <html lang="en">
